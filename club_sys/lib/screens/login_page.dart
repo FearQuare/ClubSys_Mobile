@@ -1,10 +1,24 @@
 import 'package:club_sys/screens/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:passwordfield/passwordfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late dynamic emailAddress;
+  late dynamic password;
+  bool _obscureText = true;
+
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+
+String? message;
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -52,10 +66,11 @@ class LoginPage extends StatelessWidget {
                         width: 1,
                       ),
                     ),
-                    child: const TextField(
+                    child: TextField(
+                      controller: emailController,
                       textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        hintText: "Student Id",
+                      decoration: const InputDecoration(
+                        hintText: "Student E-mail",
                         hintStyle: TextStyle(color: Colors.grey),
                         border: InputBorder.none,
                       ),
@@ -66,36 +81,71 @@ class LoginPage extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: PasswordField(
-                      backgroundColor: Colors.blue.withOpacity(0.2),
-                      hintText: 'Default password constraint ',
-                      passwordDecoration: PasswordDecoration(
-                        inputPadding:
-                            const EdgeInsets.symmetric(horizontal: 20),
-                      ),
-                      border: PasswordBorder(
-                        border: OutlineInputBorder(
-                            borderSide:
-                                const BorderSide(width: 0, color: Colors.grey),
-                            borderRadius: BorderRadius.circular(25.7)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(width: 0, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(25.7),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(width: 0, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(25.7),
+                    child: TextField(
+                      obscureText: _obscureText,
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
                         ),
                       ),
                     ),
                   ),
+                  if (message != null)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        message!,
+                        style: TextStyle(
+                          color: message!.startsWith('Error') ? Colors.red : Colors.green,
+                        ),
+                      ),
+                    ),
                   const SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      password = passwordController.text;
+                      emailAddress = emailController.text;
+                      try {
+                        final UserCredential userCredential = await FirebaseAuth
+                            .instance
+                            .signInWithEmailAndPassword(
+                          email: emailAddress,
+                          password: password,
+                        );
+                        
+                        setState(() {
+                          message = 'Login successful!';
+                        });
+
+                        // If login is successful, you can navigate to the next screen or perform any other actions.
+                      } on FirebaseAuthException catch (e) {
+                        setState(() {
+                          if (e.code == 'user-not-found') {
+                            message = 'No user found for that email.';
+                          } else if (e.code == 'wrong-password') {
+                            message = 'Wrong password provided for that user.';
+                          } else {
+                            message = 'Error: ${e.message}';
+                          }
+                        });
+                      } catch (e) {
+                        print('Error: $e');
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff37b5e9),
                       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -111,10 +161,10 @@ class LoginPage extends StatelessWidget {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => const SignUpPage(),
-    ),
-  );
+                          MaterialPageRoute(
+                            builder: (context) => const SignUpPage(),
+                          ),
+                        );
                       },
                       child: const Text(
                         "Sign Up",
