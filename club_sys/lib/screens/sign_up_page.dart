@@ -1,10 +1,28 @@
 import 'package:club_sys/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:passwordfield/passwordfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+  
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  late dynamic emailAddress;
+  late dynamic password;
+  late dynamic password1;
+  late dynamic password2;
+  bool _obscureText = true;
+  bool _obscureText2 = true;
+  bool passwordCheck= true;
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController password1Controller = TextEditingController();
+  TextEditingController password2Controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -52,7 +70,7 @@ class SignUpPage extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 25,
                 ),
                 Container(
                   width: 330,
@@ -68,17 +86,18 @@ class SignUpPage extends StatelessWidget {
                       width: 1,
                     ),
                   ),
-                  child: const TextField(
+                  child:  TextField(
                     textAlign: TextAlign.center,
+                    controller: emailController,
                     decoration: InputDecoration(
-                      hintText: "Student Id",
+                      hintText: "E-mail",
                       hintStyle: TextStyle(color: Colors.grey),
                       border: InputBorder.none,
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 25,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -134,69 +153,107 @@ class SignUpPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 15,),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  child: PasswordField(
-                    backgroundColor: Colors.blue.withOpacity(0.2),
-                    hintText: 'Passsword ',
-                    passwordDecoration: PasswordDecoration(
-                      inputPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    ),
-                    border: PasswordBorder(
-                      border: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(width: 0, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(25.7)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 0, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(25.7),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 0, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(25.7),
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: TextField(
+                      onTap:() {
+                        setState(() {
+                          passwordCheck=true;
+                        });
+                      },
+                      obscureText: _obscureText,
+                      controller: password1Controller,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                              
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
+                   const SizedBox(height: 15,),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: PasswordField(
-                    backgroundColor: Colors.blue.withOpacity(0.2),
-                    hintText: 'Password Again',
-                    passwordDecoration: PasswordDecoration(
-                      inputPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    ),
-                    border: PasswordBorder(
-                      border: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(width: 0, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(25.7)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 0, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(25.7),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 0, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(25.7),
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: TextField(
+                      obscureText: _obscureText2,
+                      controller: password2Controller,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText2
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText2 = !_obscureText2;
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
+                
+                passwordCheck? const SizedBox(height: 20,): Padding(
+                  padding: const EdgeInsets.only(top:1),
+                  child: Text("Passwords are not match",style: TextStyle(color: Colors.red),),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                    );
+                  onPressed: () async{
+                    password1=password1Controller.text;
+                    password2=password2Controller.text;
+                    print(password1Controller.text);
+                    print(password2Controller.text);
+                    if(password1Controller.text!=password2Controller.text){
+                      setState(() {
+                        passwordCheck=false;
+                      });
+                    }
+                    else{
+                      emailAddress= emailController.text;
+                      password=password1Controller.text;
+                      try{
+UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailAddress,
+        password: password,
+      );
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+                      }on FirebaseAuthException catch(e){
+                        if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      } else {
+        print('Error: ${e.message}');
+      }
+                      }catch(e){
+                        print('ERROR: $e');
+                      }
+                    
+                    }
+                   // Navigator.of(context).push(
+                     // MaterialPageRoute(
+                       // builder: (context) => LoginPage(),
+                      //),
+                    //);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xff37b5e9),
