@@ -1,26 +1,30 @@
 import 'package:club_sys/screens/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:passwordfield/passwordfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
-  
 }
 
 class _SignUpPageState extends State<SignUpPage> {
   late dynamic emailAddress;
+  late dynamic firstName;
+  late dynamic lastName;
   late dynamic password;
   late dynamic password1;
   late dynamic password2;
   bool _obscureText = true;
   bool _obscureText2 = true;
-  bool errorCheck= true;
-  String errorMessage="";
-
+  bool errorCheck = true;
+  String errorMessage = "";
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController password1Controller = TextEditingController();
   TextEditingController password2Controller = TextEditingController();
@@ -87,7 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       width: 1,
                     ),
                   ),
-                  child:  TextField(
+                  child: TextField(
                     textAlign: TextAlign.center,
                     controller: emailController,
                     decoration: InputDecoration(
@@ -117,9 +121,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           width: 1,
                         ),
                       ),
-                      child: const TextField(
+                      child: TextField(
                         textAlign: TextAlign.center,
-                        decoration: InputDecoration(
+                        controller: firstNameController,
+                        decoration: const InputDecoration(
                           hintText: "First Name",
                           hintStyle: TextStyle(color: Colors.grey),
                           border: InputBorder.none,
@@ -143,9 +148,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           width: 1,
                         ),
                       ),
-                      child: const TextField(
+                      child: TextField(
                         textAlign: TextAlign.center,
-                        decoration: InputDecoration(
+                        controller: lastNameController,
+                        decoration: const InputDecoration(
                           hintText: "Surname",
                           hintStyle: TextStyle(color: Colors.grey),
                           border: InputBorder.none,
@@ -154,116 +160,155 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15,),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: TextField(
-                      onTap:() {
-                        setState(() {
-                          errorCheck=true;
-                        });
-                      },
-                      obscureText: _obscureText,
-                      controller: password1Controller,
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                              
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                   const SizedBox(height: 15,),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: TextField(
-                      obscureText: _obscureText2,
-                      controller: password2Controller,
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText2
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText2 = !_obscureText2;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                
-                errorCheck? const SizedBox(height: 20,): Padding(
-                  padding: const EdgeInsets.only(top:1),
-                  child: Text(errorMessage,style: const TextStyle(color: Colors.red),),
+                const SizedBox(
+                  height: 15,
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: TextField(
+                    onTap: () {
+                      setState(() {
+                        errorCheck = true;
+                      });
+                    },
+                    obscureText: _obscureText,
+                    controller: password1Controller,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: TextField(
+                    obscureText: _obscureText2,
+                    controller: password2Controller,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText2
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText2 = !_obscureText2;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                errorCheck
+                    ? const SizedBox(
+                        height: 20,
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Text(
+                          errorMessage,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
                 ElevatedButton(
-                  onPressed: () async{
-                    password1=password1Controller.text;
-                    password2=password2Controller.text;
+                  onPressed: () async {
+                    emailAddress = emailController.text;
+                    password1 = password1Controller.text;
+                    password2 = password2Controller.text;
+                    firstName = firstNameController.text;
+                    lastName = lastNameController.text;
                     print(password1Controller.text);
                     print(password2Controller.text);
-                    if(password1Controller.text!=password2Controller.text){
-                      errorMessage="Passwords are not match";
+                    if (emailController.text.isEmpty &&
+                        password1Controller.text.isEmpty &&
+                        password2Controller.text.isEmpty &&
+                        firstNameController.text.isEmpty &&
+                        lastNameController.text.isEmpty) {
+                      errorMessage = "There are empty boxes !!!";
                       setState(() {
-                        errorCheck=false;
+                        errorCheck = false;
                       });
-                    }
-                    else{
-                      emailAddress= emailController.text;
-                      password=password1Controller.text;
-                      try{
-UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailAddress,
-        password: password,
-      );
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
-                      }on FirebaseAuthException catch(e){
+                    } else if (password1Controller.text !=
+                        password2Controller.text) {
+                      errorMessage = "Passwords are not match";
+                      setState(() {
+                        errorCheck = false;
+                      });
+                    } else {
+                      emailAddress = emailController.text;
+                      password = password1Controller.text;
+
+                      try {
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
+                            .createUserWithEmailAndPassword(
+                          email: emailAddress,
+                          password: password,
+                          
+                    
+                        );
+                        /*
+                        print(FirebaseFirestore.instance.collection("Students".length.toString()));
+                        await FirebaseFirestore.instance
+                            .collection('Students')
+                            .doc(userCredential.user!.uid)
+                            .set({
+                          'email': emailAddress,
+                          'password': password,
+                          'firstName': firstName,
+                          'lastName': lastName,
+                          // Add other fields as needed
+                        });
+                        */
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ),
+                        );
+                      } on FirebaseAuthException catch (e) {
                         if (e.code == 'weak-password') {
-        errorMessage='The password provided is too weak.';
-        setState(() {
-          errorCheck=false;
-        });
-      } else if (e.code == 'email-already-in-use') {
-        errorMessage='The account already exists for that email.';
-        setState(() {
-          errorCheck=false;
-        });
-      } else {
-        errorMessage='Error: ${e.message}';
-        setState(() {
-          errorCheck=false;
-        });
-      }
-                      }catch(e){
+                          errorMessage = 'The password provided is too weak.';
+                          setState(() {
+                            errorCheck = false;
+                          });
+                        } else if (e.code == 'email-already-in-use') {
+                          errorMessage =
+                              'The account already exists for that email.';
+                          setState(() {
+                            errorCheck = false;
+                          });
+                        } else {
+                          errorMessage = 'Error: ${e.message}';
+                          setState(() {
+                            errorCheck = false;
+                          });
+                        }
+                      } catch (e) {
                         print('ERROR: $e');
                       }
-                    
                     }
-                   // Navigator.of(context).push(
-                     // MaterialPageRoute(
-                       // builder: (context) => LoginPage(),
-                      //),
+                    // Navigator.of(context).push(
+                    // MaterialPageRoute(
+                    // builder: (context) => LoginPage(),
+                    //),
                     //);
                   },
                   style: ElevatedButton.styleFrom(
@@ -323,3 +368,4 @@ UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailA
     );
   }
 }
+
