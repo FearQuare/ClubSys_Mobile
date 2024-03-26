@@ -18,7 +18,8 @@ class _SignUpPageState extends State<SignUpPage> {
   late dynamic password2;
   bool _obscureText = true;
   bool _obscureText2 = true;
-  bool passwordCheck= true;
+  bool errorCheck= true;
+  String errorMessage="";
 
   TextEditingController emailController = TextEditingController();
   TextEditingController password1Controller = TextEditingController();
@@ -159,7 +160,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: TextField(
                       onTap:() {
                         setState(() {
-                          passwordCheck=true;
+                          errorCheck=true;
                         });
                       },
                       obscureText: _obscureText,
@@ -208,9 +209,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 
-                passwordCheck? const SizedBox(height: 20,): Padding(
+                errorCheck? const SizedBox(height: 20,): Padding(
                   padding: const EdgeInsets.only(top:1),
-                  child: Text("Passwords are not match",style: TextStyle(color: Colors.red),),
+                  child: Text(errorMessage,style: const TextStyle(color: Colors.red),),
                 ),
                 ElevatedButton(
                   onPressed: () async{
@@ -219,8 +220,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     print(password1Controller.text);
                     print(password2Controller.text);
                     if(password1Controller.text!=password2Controller.text){
+                      errorMessage="Passwords are not match";
                       setState(() {
-                        passwordCheck=false;
+                        errorCheck=false;
                       });
                     }
                     else{
@@ -238,11 +240,20 @@ UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailA
       );
                       }on FirebaseAuthException catch(e){
                         if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        errorMessage='The password provided is too weak.';
+        setState(() {
+          errorCheck=false;
+        });
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        errorMessage='The account already exists for that email.';
+        setState(() {
+          errorCheck=false;
+        });
       } else {
-        print('Error: ${e.message}');
+        errorMessage='Error: ${e.message}';
+        setState(() {
+          errorCheck=false;
+        });
       }
                       }catch(e){
                         print('ERROR: $e');
