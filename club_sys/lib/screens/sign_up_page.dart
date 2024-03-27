@@ -75,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
-                  height: 25,
+                  height: 20,
                 ),
                 Container(
                   width: 330,
@@ -94,7 +94,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: TextField(
                     textAlign: TextAlign.center,
                     controller: emailController,
-                    decoration: InputDecoration(
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
                       hintText: "E-mail",
                       hintStyle: TextStyle(color: Colors.grey),
                       border: InputBorder.none,
@@ -124,6 +125,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: TextField(
                         textAlign: TextAlign.center,
                         controller: firstNameController,
+                         style: const TextStyle(color: Colors.white),
                         decoration: const InputDecoration(
                           hintText: "First Name",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -151,6 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: TextField(
                         textAlign: TextAlign.center,
                         controller: lastNameController,
+                         style: const TextStyle(color: Colors.white),
                         decoration: const InputDecoration(
                           hintText: "Surname",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -173,8 +176,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                     obscureText: _obscureText,
                     controller: password1Controller,
+                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Password',
+                      hintStyle: const TextStyle(color: Colors.grey),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscureText
@@ -199,8 +204,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: TextField(
                     obscureText: _obscureText2,
                     controller: password2Controller,
+                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Password',
+                      hintStyle: const TextStyle(color: Colors.grey),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscureText2

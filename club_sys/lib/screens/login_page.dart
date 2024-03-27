@@ -68,6 +68,7 @@ String? message;
                     child: TextField(
                       controller: emailController,
                       textAlign: TextAlign.center,
+                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         hintText: "Student E-mail",
                         hintStyle: TextStyle(color: Colors.grey),
@@ -83,8 +84,10 @@ String? message;
                     child: TextField(
                       obscureText: _obscureText,
                       controller: passwordController,
+                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Password',
+                        hintStyle: TextStyle(color: Colors.grey),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureText
@@ -170,6 +173,7 @@ String? message;
                         style: TextStyle(
                           color: Colors.white,
                           decoration: TextDecoration.underline,
+                          decorationColor: Colors.white
                         ),
                       )),
                   const SizedBox(
