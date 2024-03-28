@@ -1,3 +1,4 @@
+import 'package:club_sys/screens/home_page.dart';
 import 'package:club_sys/screens/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
 
-String? message;
+  String? message;
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -68,7 +69,7 @@ String? message;
                     child: TextField(
                       controller: emailController,
                       textAlign: TextAlign.center,
-                       style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         hintText: "Student E-mail",
                         hintStyle: TextStyle(color: Colors.grey),
@@ -84,7 +85,7 @@ String? message;
                     child: TextField(
                       obscureText: _obscureText,
                       controller: passwordController,
-                       style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Password',
                         hintStyle: TextStyle(color: Colors.grey),
@@ -110,7 +111,9 @@ String? message;
                       child: Text(
                         message!,
                         style: TextStyle(
-                          color: message!.startsWith('Error') ? Colors.red : Colors.green,
+                          color: message!.startsWith('Error')
+                              ? Colors.red
+                              : Colors.green,
                         ),
                       ),
                     ),
@@ -128,11 +131,15 @@ String? message;
                           email: emailAddress,
                           password: password,
                         );
-                        
+
                         setState(() {
                           message = 'Login successful!';
                         });
-
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(),
+                          ),
+                        );
                         // If login is successful, you can navigate to the next screen or perform any other actions.
                       } on FirebaseAuthException catch (e) {
                         setState(() {
@@ -171,10 +178,9 @@ String? message;
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Colors.white,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white
-                        ),
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white),
                       )),
                   const SizedBox(
                     height: 60,
